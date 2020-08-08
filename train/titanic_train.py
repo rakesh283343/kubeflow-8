@@ -41,10 +41,10 @@ def evaluation(model, x_test, y_test, model_pkl_gcs_uri, acc_csv_gcs_uri, min_ac
  latestacc = 0.0
  
  try:
- acc_df = pd.read_csv(acc_csv_gcs_uri)
- latestacc = acc_df["acc"].item()
+  acc_df = pd.read_csv(acc_csv_gcs_uri)
+  latestacc = acc_df["acc"].item()
  except FileNotFoundError:
- print("No accuracy file, we will create one")
+  print("No accuracy file, we will create one")
  
  predict = model.predict(x_test)
  print("confusion matrix ")
@@ -57,41 +57,41 @@ def evaluation(model, x_test, y_test, model_pkl_gcs_uri, acc_csv_gcs_uri, min_ac
  acc_score = accuracy_score(y_test, predict)
  print(acc_score)
  metrics = {
- "metrics" : [{
- "name" : "accuracy-score",
- "numberValue" : acc_score,
- "format" : "PERCENTAGE"
- }]
+  "metrics" : [{
+   "name" : "accuracy-score",
+   "numberValue" : acc_score,
+   "format" : "PERCENTAGE"
+  }]
  }
  
  print("\nWriting matcis file: /mlpipeline-metrics.json")
  try:
- with open("/mlpipeline-metrics.json", "w") as f:
- json.dump(metrics, f)
+  with open("/mlpipeline-metrics.json", "w") as f:
+   json.dump(metrics, f)
  except PermissionError:
- print("For local test we have no permission for /, so write current working dir:")
- with open("mlpipeline-metrics.json", "w") as f:
- json.dump(metrics, f)
+  print("For local test we have no permission for /, so write current working dir:")
+  with open("mlpipeline-metrics.json", "w") as f:
+   json.dump(metrics, f)
  
  print("latestacc:", latestacc)
  print("min_acc_progress:", min_acc_progress)
  
  if((acc_score-latestacc) >= min_acc_progress):
- acc_df = pd.DataFrame({"acc":acc_score, "deploy":"pending"}, index=[0])
- with open(model_file, "wb") as f:
- pickle.dump(model, f)
- upload_blob(model_bucket, model_file, model_blob)
- print("Write to GCS:" + acc_csv_gcs_uri)
- acc_df.to_csv(acc_csv_gcs_uri)
+  acc_df = pd.DataFrame({"acc":acc_score, "deploy":"pending"}, index=[0])
+  with open(model_file, "wb") as f:
+   pickle.dump(model, f)
+   upload_blob(model_bucket, model_file, model_blob)
+   print("Write to GCS:" + acc_csv_gcs_uri)
+   acc_df.to_csv(acc_csv_gcs_uri)
  else:
- print("Not meet deploy condition (current_acc — latest_acc >= min_acc_progress):", str(acc_score), "-", str(latestacc), ">=", min_acc_progress)
+  print("Not meet deploy condition (current_acc — latest_acc >= min_acc_progress):", str(acc_score), "-", str(latestacc), ">=", min_acc_progress)
  
 def divideGCSUri(gcsUri):
- gcsprefix = “gs://”
+ gcsprefix = "gs://"
  assert(gcsUri.index(gcsprefix) == 0)
  bucket = gcsUri[len(gcsprefix):gcsUri.index("/", len(gcsprefix))]
  blob = gcsUri[gcsUri.index(bucket) + len(bucket)+1:]
- item = blob[blob.rindex(“/”)+1:]
+ item = blob[blob.rindex("/")+1:]
  return bucket, blob, item
  
 def upload_blob(bucket_name, src_file, target_blob):
@@ -100,41 +100,38 @@ def upload_blob(bucket_name, src_file, target_blob):
  bucket = storage_client.bucket(bucket_name)
  blob = bucket.blob(target_blob)
  blob.upload_from_filename(src_file)
- print(
- “File {} uploaded”.format(
- src_file
- )
- )
+
+ print("File {} uploaded".format(src_file))
  
 if __name__ == "__main__":
  arg_parser = argparse.ArgumentParser()
  
  arg_parser.add_argument(
- "--preproc_csv_gcs_uri",
- type=str,
- required=True,
- help="Preprocessed CSV training data located in GCS (gs://{path}/{filename}.csv)"
+  "--preproc_csv_gcs_uri",
+  type=str,
+  required=True,
+  help="Preprocessed CSV training data located in GCS (gs://{path}/{filename}.csv)"
  )
  
  arg_parser.add_argument(
- "--model_pkl_gcs_uri",
- type=str,
- required=True,
- help="GCS URI for saving sklearn pickle model (gs://{path}/{filename}.pkl)"
+  "--model_pkl_gcs_uri",
+  type=str,
+  required=True,
+  help="GCS URI for saving sklearn pickle model (gs://{path}/{filename}.pkl)"
  )
  
  arg_parser.add_argument(
- "--acc_csv_gcs_uri",
- type=str,
- required=True,
- help="GCS URI for saving accuracy csv (gs://{path}/{filename}.csv)"
+  "--acc_csv_gcs_uri",
+  type=str,
+  required=True,
+  help="GCS URI for saving accuracy csv (gs://{path}/{filename}.csv)"
  )
  
  arg_parser.add_argument(
- "--min_acc_progress",
- type=float,
- default=0.000001,
- help="Minimum improved accuracy threshold for deploying model (default: 0.000001)"
+  "--min_acc_progress",
+  type=float,
+  default=0.000001,
+  help="Minimum improved accuracy threshold for deploying model (default: 0.000001)"
  )
  
  # AI Platform Job submit throws unknown arguments
