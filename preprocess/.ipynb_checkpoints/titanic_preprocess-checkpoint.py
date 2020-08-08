@@ -2,31 +2,38 @@
 #Copyright 2020 Google LLC. 
 #This software is provided as-is, without warranty or representation for any use or purpose. 
 #Your use of it is subject to your agreements with Google.
-#Author: whjang@google.comimport sys
+#Author: whjang@google.com
+import sys
 import pandas as pd
-import argparsedef preprocessing(raw_csv_gcs_uri, preproc_csv_gcs_uri): 
- print(“Preprocessing Titanic Data”)
+import argparse
+
+def preprocessing(raw_csv_gcs_uri, preproc_csv_gcs_uri): 
+ print("Preprocessing Titanic Data")
  train_raw = pd.read_csv(raw_csv_gcs_uri)
  
- features = [“Pclass”, “Sex”, “SibSp”]
+ features = ["Pclass", "Sex", "SibSp"]
  preprocessing_data = pd.get_dummies(train_raw[features])
- preprocessing_data[“Survived”] = train_raw[“Survived”] print(preprocessing_data.head())
- preprocessing_data.to_csv(preproc_csv_gcs_uri, index=False)if __name__ == “__main__”:
+ preprocessing_data["Survived"] = train_raw["Survived"] 
+ 
+ print(preprocessing_data.head())
+ preprocessing_data.to_csv(preproc_csv_gcs_uri, index=False)
+
+if __name__ == "__main__":
  
  arg_parser = argparse.ArgumentParser()
  
  arg_parser.add_argument(
- “--raw_csv_gcs_uri”,
+ "--raw_csv_gcs_uri",
  type=str,
  required=True,
- help=”Google Cloud Storage URI for reading raw train data (ex: gs://{bucketName}/{pathToRaw}/{rawTrainFile}.csv)”
+ help="Google Cloud Storage URI for reading raw train data (ex: gs://{bucketName}/{pathToRaw}/{rawTrainFile}.csv)"
  )
  
  arg_parser.add_argument(
- “--preproc_csv_gcs_uri”,
+ "--preproc_csv_gcs_uri",
  type=str,
  required=True,
- help=”Google Cloud Storage URI for writing pre-processed train data (ex: gs://{bucketName}/{pathToRaw}/{rawTrainFile}.csv)”
+ help="Google Cloud Storage URI for writing pre-processed train data (ex: gs://{bucketName}/{pathToRaw}/{rawTrainFile}.csv)"
  )
  
  # AI Platform Job submit throws unknown arguments
