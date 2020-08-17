@@ -1,7 +1,9 @@
 #setup.py
 from setuptools import find_packages
 from setuptools import setup
+
 REQUIRED_PACKAGES = ["gcsfs", "simplejson"]
+
 setup(
    name="train",
    version="0.1",

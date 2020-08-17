@@ -41,10 +41,10 @@ def evaluation(model, x_test, y_test, model_pkl_gcs_uri, acc_csv_gcs_uri, min_ac
     latestacc = 0.0
  
     try:
-    acc_df = pd.read_csv(acc_csv_gcs_uri)
-    latestacc = acc_df["acc"].item()
+        acc_df = pd.read_csv(acc_csv_gcs_uri)
+        latestacc = acc_df["acc"].item()
     except FileNotFoundError:
-    print("No accuracy file, we will create one")
+        print("No accuracy file, we will create one")
  
     predict = model.predict(x_test)
     print("confusion matrix ")
@@ -65,26 +65,28 @@ def evaluation(model, x_test, y_test, model_pkl_gcs_uri, acc_csv_gcs_uri, min_ac
     }
  
     print("\nWriting matcis file: /mlpipeline-metrics.json")
+    
     try:
         with open("/mlpipeline-metrics.json", "w") as f:
-        json.dump(metrics, f)
+            json.dump(metrics, f)
     except PermissionError:
         print("For local test we have no permission for /, so write current working dir:")
+        
         with open("mlpipeline-metrics.json", "w") as f:
             json.dump(metrics, f)
  
-    print("latestacc:", latestacc)
-    print("min_acc_progress:", min_acc_progress)
+        print("latestacc:", latestacc)
+        print("min_acc_progress:", min_acc_progress)
  
-    if((acc_score-latestacc) >= min_acc_progress):
-        acc_df = pd.DataFrame({"acc":acc_score, "deploy":"pending"}, index=[0])
-        with open(model_file, "wb") as f:
-            pickle.dump(model, f)
-            upload_blob(model_bucket, model_file, model_blob)
-            print("Write to GCS:" + acc_csv_gcs_uri)
-            acc_df.to_csv(acc_csv_gcs_uri)
-    else:
-        print("Not meet deploy condition (current_acc — latest_acc >= min_acc_progress):", str(acc_score), "-", str(latestacc), ">=", min_acc_progress)
+        if((acc_score-latestacc) >= min_acc_progress):
+            acc_df = pd.DataFrame({"acc":acc_score, "deploy":"pending"}, index=[0])
+            with open(model_file, "wb") as f:
+                pickle.dump(model, f)
+                upload_blob(model_bucket, model_file, model_blob)
+                print("Write to GCS:" + acc_csv_gcs_uri)
+                acc_df.to_csv(acc_csv_gcs_uri)
+        else:
+            print("Not meet deploy condition (current_acc — latest_acc >= min_acc_progress):", str(acc_score), "-", str(latestacc), ">=", min_acc_progress)
  
 def divideGCSUri(gcsUri):
     gcsprefix = "gs://"

@@ -21,12 +21,12 @@ FROM frolvlad/alpine-python-machinelearning
 # RUN pip3 install --upgrade pycparser
 # RUN pip3 install --upgrade cffi==1.14.0
 # RUN pip3 install google-crc32c==1.0.0
-RUN pip3 install google-cloud-storage==1.0.0
-RUN pip3 install --upgrade gcsfs 
-RUN pip3 install --upgrade sklearn
-RUN pip3 install --upgrade argparse
-#RUN pip3 install --upgrade pandas
-RUN pip install --upgrade simplejson
+RUN pip3 install google-cloud-storage==1.0.0 gcsfs sklearn argparse simplejson
+# RUN pip3 install --upgrade gcsfs 
+# RUN pip3 install --upgrade sklearn
+# RUN pip3 install --upgrade argparse
+# RUN pip3 install --upgrade pandas
+# RUN pip install --upgrade simplejson
 ENV PYTHONUNBUFFERED 1
 RUN mkdir -p /titanic/src
 COPY . /titanic/src
