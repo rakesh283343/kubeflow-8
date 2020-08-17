@@ -7,8 +7,8 @@
 FROM frolvlad/alpine-python-machinelearning
 
 #RUN pip install --upgrade pandas
-RUN pip install --upgrade gcsfs
-RUN pip install --upgrade argparse
+RUN pip install --upgrade gcsfs argparse
+#RUN pip install --upgrade argparse
 ENV PYTHONUNBUFFERED 1
 
 RUN mkdir -p /titanic/src
