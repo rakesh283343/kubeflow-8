@@ -23,6 +23,7 @@ from __future__ import print_function
 import argparse
 import json
 import os
+import os.path
 import sys
 import numpy as np
 import tensorflow as tf
@@ -228,9 +229,12 @@ def main(_):
     if is_chief:
         print("Export saved model")
         #classifier.export_savedmodel(args.tf_export_dir, serving_input_receiver_fn=serving_fn)
-        classifier.export_savedmodel(args.tf_export_dir, serving_input_receiver_fn=serving_fn)
-        print("Done exporting the model")
-
+        classifier.export_savedmodel("/mnt/export/"+args.tf_export_dir, serving_input_receiver_fn=serving_fn)
+        print("Done exporting the model: " + args.tf_export_dir)
+               
+        #file1 = open("/mnt/test.txt", "w")
+        #file1.write("""Hello my name is ABCD""")
+        #file1.close()
 
 if __name__ == '__main__':
     tf.app.run()
